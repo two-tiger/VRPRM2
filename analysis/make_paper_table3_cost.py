@@ -1,3 +1,8 @@
+"""Generate the paper Table 3 (macro F1 + computational overhead) CSV from
+cost-probe outputs under benchmarks/visualprocessbench/outputs/compute_cost/.
+Moved from benchmarks/visualprocessbench/cost/make_compute_cost_paper_table.py.
+"""
+
 import argparse
 import csv
 import json
