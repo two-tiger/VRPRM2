@@ -38,15 +38,21 @@ from pathlib import Path
 
 path = Path(os.environ["DATASET_PATH"])
 data = json.loads(path.read_text(encoding="utf-8"))
+no_think = any(sample.get("task_type") == "no_think_stepwise_multiturn" for sample in data)
 bad = []
 trainable_neg = trainable_pos = 0
 for idx, sample in enumerate(data):
     messages = sample.get("messages") or []
-    if len(messages) < 5 or messages[0].get("role") != "system":
+    min_len = 3 if no_think else 5
+    if len(messages) < min_len or messages[0].get("role") != "system":
         bad.append((idx, "bad_messages"))
         continue
-    if messages[2].get("role") != "assistant" or not messages[2].get("content", "").lstrip().startswith("<think>"):
-        bad.append((idx, "bad_global_thinking"))
+    if not no_think:
+        if messages[2].get("role") != "assistant" or not messages[2].get("content", "").lstrip().startswith("<think>"):
+            bad.append((idx, "bad_global_thinking"))
+    else:
+        if messages[1].get("role") != "user" or "<think>" in messages[1].get("content", ""):
+            bad.append((idx, "bad_no_think_first_turn"))
     for msg in messages:
         if msg.get("role") != "assistant":
             continue
@@ -62,8 +68,9 @@ if bad:
     raise SystemExit(f"Dataset validation failed for {path}: {bad[:10]}")
 total = trainable_neg + trainable_pos
 ratio = trainable_neg / total if total else 0
+mode = "no_think" if no_think else "global_think"
 print(
-    f"Validated multiturn dataset: samples={len(data)}, "
+    f"Validated multiturn dataset ({mode}): samples={len(data)}, "
     f"trainable_neg={trainable_neg}, trainable_pos={trainable_pos}, neg_ratio={ratio:.4f}"
 )
 PY

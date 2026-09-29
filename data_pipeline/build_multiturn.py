@@ -22,6 +22,12 @@ STEP_SCORE_TURN_PROMPT = """[Previous Step Judgments]
 {current_step}
 Is the current step correct in context? Output only one token: 1 or 0."""
 
+NO_THINK_MULTITURN_SYSTEM_PROMPT = """You are a visual process reward model. Given image(s), a problem, a reference answer, and a complete candidate solution, judge each candidate solution step.
+
+Answer every step-scoring turn with exactly one token: 1 or 0. Do not reason out loud and do not output <think>...</think>."""
+
+NO_THINK_TAG = "_nothink"
+
 
 def load_json(path):
     path = Path(path)
@@ -118,16 +124,19 @@ def build_multiturn_sample(
     step_loss_scale,
     negative_threshold,
     positive_threshold,
+    no_think=False,
 ):
     messages = []
     global_messages = global_row["messages"]
     global_user = global_messages[1]["content"]
-    global_assistant = dict(global_messages[2])
-    global_assistant["loss_scale"] = global_loss_scale
-
-    messages.append({"role": "system", "content": GLOBAL_THINK_MULTITURN_SYSTEM_PROMPT})
-    messages.append({"role": "user", "content": global_user})
-    messages.append(global_assistant)
+    if no_think:
+        messages.append({"role": "system", "content": NO_THINK_MULTITURN_SYSTEM_PROMPT})
+    else:
+        global_assistant = dict(global_messages[2])
+        global_assistant["loss_scale"] = global_loss_scale
+        messages.append({"role": "system", "content": GLOBAL_THINK_MULTITURN_SYSTEM_PROMPT})
+        messages.append({"role": "user", "content": global_user})
+        messages.append(global_assistant)
 
     step_lines = parse_step_lines(global_user)
     source_scores = [float(x) for x in global_row.get("source_scores", [])]
@@ -162,7 +171,17 @@ def build_multiturn_sample(
             loss = True
             trainable_labels.append(score)
 
-        messages.append({"role": "user", "content": build_step_user(current_step, previous_scores)})
+        if no_think:
+            # Evaluation-aligned no-think stepwise interface: every step turn
+            # repeats the full question/reference/solution context, then adds
+            # previous judgments and the current step (mirrors the evaluator's
+            # no_think_stepwise mode).
+            step_user = (
+                f"{global_user}\n{build_step_user(current_step, previous_scores)}"
+            )
+        else:
+            step_user = build_step_user(current_step, previous_scores)
+        messages.append({"role": "user", "content": step_user})
         assistant = {"role": "assistant", "content": str(score)}
         if loss:
             assistant["loss_scale"] = step_loss_scale
@@ -182,7 +201,7 @@ def build_multiturn_sample(
         "source_sample_id": global_row.get("source_sample_id"),
         "source_key": list(key),
         "source_polarity": polarity,
-        "task_type": "global_think_stepwise_multiturn",
+        "task_type": "no_think_stepwise_multiturn" if no_think else "global_think_stepwise_multiturn",
         "num_steps": max_steps,
         "num_trainable_steps": len(trainable_labels),
         "num_ignored_steps": len(ignored_labels),
@@ -265,6 +284,15 @@ def parse_args():
     parser.add_argument("--global-loss-scale", type=float, default=0.5)
     parser.add_argument("--step-loss-scale", type=float, default=2.0)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--no-think",
+        action="store_true",
+        help=(
+            "Build the no-thinking ablation dataset: drop the global-thinking "
+            "turn and put the full context into every stepwise scoring turn "
+            "(evaluation-aligned with the no_think_stepwise evaluator mode)."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -275,6 +303,11 @@ def main():
         raise ValueError("--target-negative-ratio must be between 0 and 1.")
     if args.negative_score_threshold >= args.positive_score_threshold:
         raise ValueError("--negative-score-threshold must be smaller than --positive-score-threshold.")
+
+    if args.no_think and args.output_path == str(DEFAULT_OUTPUT_PATH):
+        args.output_path = str(Path(args.output_path).with_suffix(".json")).replace(
+            "_multiturn_sft_neg35", "_multiturn_sft_neg35" + NO_THINK_TAG
+        )
 
     negative_rows = load_json(args.negative_path)
     positive_rows = load_json(args.positive_path)
@@ -291,6 +324,7 @@ def main():
             args.step_loss_scale,
             args.negative_score_threshold,
             args.positive_score_threshold,
+            no_think=args.no_think,
         )
         for key, global_row, step_rows in negative_groups
     ]
@@ -304,6 +338,7 @@ def main():
             args.step_loss_scale,
             args.negative_score_threshold,
             args.positive_score_threshold,
+            no_think=args.no_think,
         )
         for key, global_row, step_rows in positive_groups
     ]
@@ -329,6 +364,7 @@ def main():
         "positive_samples_selected": summarize(selected_positive),
         "sampling": sampling_stats,
         "final": summarize(final_data),
+        "no_think": args.no_think,
         "global_loss_scale": args.global_loss_scale,
         "step_loss_scale": args.step_loss_scale,
         "note": "Use --loss_scale default and --is_binary_loss_scale false in ms-swift.",
