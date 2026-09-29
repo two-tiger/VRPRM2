@@ -21,7 +21,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from rollout_sft_data_pipeline import (  # noqa: E402
+from common import (  # noqa: E402
     DEFAULT_ANNOTATION_PATH,
     DEFAULT_IMAGE_ROOT,
     DEFAULT_OUTPUT_DIR,

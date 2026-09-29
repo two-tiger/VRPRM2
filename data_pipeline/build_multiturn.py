@@ -5,7 +5,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "rollout_outputs"
+DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "rollout_outputs"
 DEFAULT_NEGATIVE_PATH = DEFAULT_OUTPUT_DIR / "visualprm400k_negative_global_think_stepwise_sft_success.json"
 DEFAULT_POSITIVE_PATH = DEFAULT_OUTPUT_DIR / "visualprm400k_positive_global_think_stepwise_sft_success.json"
 DEFAULT_OUTPUT_PATH = DEFAULT_OUTPUT_DIR / "visualprm400k_global_think_stepwise_multiturn_sft_neg35.json"
