@@ -1,0 +1,18 @@
+# Install torch/torchvision separately for your CUDA driver first, then install this file.
+# Example for CUDA 12.8 compatible PyTorch:
+#   pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
+#
+# VisualPRM-8B remote code was released against the older Transformers generation API.
+# transformers 4.37.x keeps the remote-code behavior expected by OpenGVLab/VisualPRM-8B.
+transformers==4.37.2
+accelerate==0.27.2
+tokenizers==0.15.2
+safetensors==0.4.3
+huggingface-hub==0.20.3
+sentencepiece==0.1.99
+protobuf==4.25.3
+einops==0.7.0
+timm==0.9.12
+pillow==10.2.0
+tqdm==4.66.2
+numpy==1.26.4

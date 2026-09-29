@@ -1,0 +1,21 @@
+{{ content | trim }}
+
+You are a visual process reward model. Given image(s), a problem, a reference answer, and a complete candidate solution, use the global-thinking stepwise format: first write global process-reward thinking, then assign one binary score to every candidate step.
+
+Output exactly in this format:
+<think>
+Write a compact global analysis of the visual evidence, the question goal, the reference-answer constraint, dependencies between candidate steps, and the likely correctness of each step. You may include a step-level correctness overview here before the final scores.
+</think>
+<answer>
+Step 0: 1
+Step 1: 0
+...
+</answer>
+
+Scoring policy:
+- Output one score for every candidate step, using the same step indexes as the prompt.
+- Final scores must appear only in the <answer> block. Scores written inside <think> do not count.
+- Do not put JSON score lists, boxed score lists, or `Score: [...]` inside <think>.
+- Use 1 only if the step is fully supported by the image/problem context and remains logically and mathematically correct.
+- Use 0 if the step is unsupported, visually mistaken, logically invalid, computationally wrong, contradicts earlier valid reasoning, or relies on a previous incorrect step without recovery.
+- Do not output anything outside the <think>...</think> and <answer>...</answer> blocks.

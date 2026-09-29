@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Experiment artifacts (not part of the repository)
+wandb/
+cache/
+easyr1/checkpoints/
+easyr1/data/
+easyr1/outputs/
+sft/output/
+rollout_outputs/
+data/
+benchmarks/**/outputs*/
+benchmarks/vlmeval_bon/datasets/
+
+# Local VisualProcessBench image assets (download separately, see benchmarks README)
+benchmarks/visualprocessbench/VisualProcessBench/images
+benchmarks/visualprocessbench/VisualProcessBench_mini_dev/images
+
+# Logs
+*.log

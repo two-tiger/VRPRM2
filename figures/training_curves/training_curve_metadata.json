@@ -1,0 +1,30 @@
+{
+  "sft": {
+    "source": "sft/output/qwen3_vl_8b_thinking_global_stepwise_multiturn_sft/v0-20260628-015250",
+    "log_path": "sft/output/qwen3_vl_8b_thinking_global_stepwise_multiturn_sft/v0-20260628-015250/logging.jsonl",
+    "final_summary": {
+      "model_parameter_info": "PeftModelForCausalLM: 8810.7707M Params (620.0353M Trainable [7.0372%]), 0.0001M Buffers.",
+      "last_model_checkpoint": "sft/output/qwen3_vl_8b_thinking_global_stepwise_multiturn_sft/v0-20260628-015250/checkpoint-513",
+      "best_model_checkpoint": null,
+      "best_metric": 0.37010506,
+      "global_step": 513,
+      "memory": 55.435546875
+    },
+    "best_eval_loss_step": 300,
+    "best_eval_loss": 0.37010506
+  },
+  "rl": {
+    "source": "easyr1/checkpoints/visualprm_easy_r1/qwen3_vl_8b_source_macro_visualprm400k_gspo_lora_clean_balanced_40k_450",
+    "resolved_source": "easyr1/checkpoints/visualprm_easy_r1/qwen3_vl_8b_source_macro_visualprm400k_gspo_lora_clean_balanced_40k_600",
+    "log_path": "easyr1/checkpoints/visualprm_easy_r1/qwen3_vl_8b_source_macro_visualprm400k_gspo_lora_clean_balanced_40k_600/experiment_log.jsonl",
+    "selected_rl_step": 450,
+    "checkpoint_tracker": {
+      "best_global_step": 150,
+      "best_val_reward_score": 0.5446,
+      "last_global_step": 600,
+      "last_actor_path": "easyr1/checkpoints/visualprm_easy_r1/qwen3_vl_8b_source_macro_visualprm400k_gspo_lora_clean_balanced_40k_600/global_step_600/actor"
+    },
+    "best_val_reward_step": 150,
+    "best_val_reward": 0.5445955991744995
+  }
+}

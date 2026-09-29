@@ -1,0 +1,31 @@
+{
+  "total_samples": 2866,
+  "total_steps": 26950,
+  "label_counts": {
+    "correct_1": 16585,
+    "neutral_0": 2674,
+    "incorrect_-1": 7691
+  },
+  "samples_by_source": {
+    "DynaMath": 570,
+    "MMMU_DEV_VAL": 267,
+    "MathVerse_MINI_Vision_Only": 1026,
+    "MathVision_MINI": 712,
+    "WeMath": 291
+  },
+  "steps_by_source": {
+    "DynaMath": 5026,
+    "MMMU_DEV_VAL": 2679,
+    "MathVerse_MINI_Vision_Only": 9667,
+    "MathVision_MINI": 7000,
+    "WeMath": 2578
+  },
+  "samples_by_policy_model": {
+    "Claude3-5V_Sonnet_20241022_tem07": 865,
+    "GPT4o_20241120_tem07": 870,
+    "lmdeploy_internvl": 306,
+    "lmdeploy_qvq": 825
+  },
+  "missing_images_count": 0,
+  "missing_images_preview": []
+}

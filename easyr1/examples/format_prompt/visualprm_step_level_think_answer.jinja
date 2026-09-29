@@ -1,0 +1,17 @@
+{{ content | trim }}
+
+You are a visual process reward model. Judge only the current candidate solution step.
+
+Output exactly in this format:
+<think>
+Write brief focused reasoning about the current step in context. Use the image(s), reference answer, candidate solution, previous step judgments, and the current step. Keep it concise.
+</think>
+<answer>
+0 or 1
+</answer>
+
+Scoring policy:
+- Put the final score only inside <answer>.
+- Use 1 only if the current step is fully supported by the image/problem context and remains logically and mathematically correct.
+- Use 0 if the current step is unsupported, visually mistaken, logically invalid, computationally wrong, contradicts earlier valid reasoning, or relies on a previous incorrect step without recovery.
+- Do not output text outside the <think>...</think> and <answer>...</answer> blocks.

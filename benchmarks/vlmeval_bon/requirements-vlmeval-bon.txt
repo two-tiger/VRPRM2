@@ -1,0 +1,48 @@
+# Environment for VRPRM_v2.0/benchmarks/vlmeval_bon.
+# Recommended Python: 3.10.
+#
+# Install a CUDA-matched PyTorch first if needed, for example:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+
+# Core ML stack. transformers==4.51.2 provides AutoModelForVision2Seq and
+# works with the current VLMEvalKit VLM adapters used by this benchmark.
+transformers==4.51.2
+tokenizers==0.21.1
+accelerate>=1.6.0,<2.0.0
+huggingface_hub>=0.30.0,<1.0.0
+einops>=0.8.0
+timm>=1.0.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# API clients used by the BoN policy/PRM endpoints and VLMEvalKit judges.
+openai>=1.60.0
+requests>=2.32.0
+python-dotenv>=1.0.1
+google-genai>=1.0.0
+
+# Data processing / VLMEvalKit IO.
+numpy>=1.26.0,<2.0.0
+pandas>=2.2.0,<3.0.0
+pillow>=10.0.0
+opencv-python>=4.8.0
+openpyxl>=3.1.0
+xlsxwriter>=3.2.0
+tabulate>=0.9.0
+validators>=0.28.0
+json_repair>=0.30.0
+portalocker>=2.8.0
+timeout-decorator>=0.5.0
+tqdm>=4.66.0
+rich>=13.7.0
+
+# Evaluation helpers used by VLMEvalKit.
+matplotlib>=3.8.0
+nltk>=3.8.1
+omegaconf>=2.3.0
+sympy>=1.12
+tiktoken>=0.7.0
+qwen-vl-utils>=0.0.8
+imageio>=2.34.0
+gradio>=4.44.0
+sty>=1.0.6
