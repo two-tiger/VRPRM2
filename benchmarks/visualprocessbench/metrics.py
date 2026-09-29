@@ -1,3 +1,23 @@
+"""VisualProcessBench step-level metrics.
+
+Two Overall conventions are reported together (see docs/PROTOCOL.md):
+
+- ``overall_step_macro_f1``: macro F1 over the correct/incorrect classes
+  computed on ALL steps pooled across the five sources (step-weighted).
+  This is the official VisualProcessBench protocol ("the overall score is
+  the micro average of the score from different data sources", Wang et al.)
+  and the number quoted as "Overall" in the paper's main tables.
+- ``mean_source_macro_f1``: unweighted mean of the five per-source macro
+  F1 values. Report it alongside the pooled number — the two can differ by
+  more than a point because the sources are uneven in size
+  (MathVerse 1026 / MathVision 712 / DynaMath 570 / WeMath 291 /
+  MMMU 267 samples out of 2,866).
+
+Neutral ground-truth steps (label 0) are excluded from both. Predictions
+that cannot be parsed to 0/1 are kept as an invalid class and count against
+both classes; ``invalid_predictions`` reports how many.
+"""
+
 import argparse
 import json
 from collections import defaultdict

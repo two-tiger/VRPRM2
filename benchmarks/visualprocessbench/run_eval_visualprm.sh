@@ -9,7 +9,7 @@ export VPB_THRESHOLD="${VPB_THRESHOLD:-0.85}"
 export VPB_DTYPE="${VPB_DTYPE:-bfloat16}"
 export VPB_OUTPUT="${VPB_OUTPUT:-${SCRIPT_DIR}/outputs/visualprm_predictions.jsonl}"
 
-python "${SCRIPT_DIR}/visualprm_paper_eval.py" \
+python "${SCRIPT_DIR}/eval_visualprm_baseline.py" \
   --model-path "${VISUALPRM_MODEL_PATH}" \
   --threshold "${VPB_THRESHOLD}" \
   --dtype "${VPB_DTYPE}" \

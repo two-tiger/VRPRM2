@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
+export PYTHONPATH="${SCRIPT_DIR}:${SCRIPT_DIR}/..:${PYTHONPATH:-}"
 
 VPB_LIMIT="${VPB_LIMIT:-32}"
 VPB_SAMPLE_STRATEGY="${VPB_SAMPLE_STRATEGY:-random}"

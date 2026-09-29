@@ -3,8 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
+export PYTHONPATH="${SCRIPT_DIR}:${SCRIPT_DIR}/..:${PYTHONPATH:-}"
 
+VPB_METHODS="${VPB_METHODS:-no_think,global_think,visualprm}"
 VPB_LIMIT="${VPB_LIMIT:-32}"
 VPB_SAMPLE_STRATEGY="${VPB_SAMPLE_STRATEGY:-random}"
 VPB_SEED="${VPB_SEED:-42}"
@@ -28,8 +29,12 @@ SFT_MAX_RETRIES="${SFT_MAX_RETRIES:-3}"
 SFT_REQUEST_TIMEOUT="${SFT_REQUEST_TIMEOUT:-300}"
 SFT_TOKENIZER_PATH="${SFT_TOKENIZER_PATH:-}"
 
+VISUALPRM_MODEL_PATH="${VISUALPRM_MODEL_PATH:-VisualPRM/VisualPRM-8B}"
+VISUALPRM_DTYPE="${VISUALPRM_DTYPE:-${VPB_DTYPE:-bfloat16}}"
+VISUALPRM_THRESHOLD="${VISUALPRM_THRESHOLD:-${VPB_THRESHOLD:-0.85}}"
+
 ARGS=(
-  --methods "no_think,global_think"
+  --methods "${VPB_METHODS}"
   --limit "${VPB_LIMIT}"
   --sample-strategy "${VPB_SAMPLE_STRATEGY}"
   --seed "${VPB_SEED}"
@@ -47,6 +52,9 @@ ARGS=(
   --sft-full-max-tokens "${SFT_FULL_MAX_TOKENS}"
   --sft-max-retries "${SFT_MAX_RETRIES}"
   --sft-request-timeout "${SFT_REQUEST_TIMEOUT}"
+  --visualprm-model-path "${VISUALPRM_MODEL_PATH}"
+  --visualprm-dtype "${VISUALPRM_DTYPE}"
+  --visualprm-threshold "${VISUALPRM_THRESHOLD}"
 )
 
 if [[ -n "${VPB_BENCHMARK_DIR:-}" ]]; then

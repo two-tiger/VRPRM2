@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-export PYTHONPATH="${SCRIPT_DIR}:${PYTHONPATH:-}"
+export PYTHONPATH="${SCRIPT_DIR}:${SCRIPT_DIR}/..:${PYTHONPATH:-}"
 
 VPB_LIMIT="${VPB_LIMIT:-0}"
 VPB_THRESHOLD="${VPB_THRESHOLD:-${VISUALPRM_THRESHOLD:-0.85}}"
@@ -19,7 +19,7 @@ export VISUALPRM_MODEL_PATH="${VISUALPRM_MODEL_PATH:-VisualPRM/VisualPRM-8B}"
 mkdir -p "${VPB_OUTPUT_DIR}"
 
 start_time="$(date +%s.%N)"
-bash "${SCRIPT_DIR}/run_eval_visualprm_paper.sh"
+bash "${SCRIPT_DIR}/../run_eval_visualprm.sh"
 end_time="$(date +%s.%N)"
 wall_time="$(awk -v start="${start_time}" -v end="${end_time}" 'BEGIN { printf "%.6f", end - start }')"
 

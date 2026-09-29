@@ -5,6 +5,8 @@ import math
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from metrics import compute_metrics, write_json
 
 

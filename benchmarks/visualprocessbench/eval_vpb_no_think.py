@@ -11,7 +11,7 @@ try:
 except ImportError:
     tqdm = None
 
-from api_eval_sft import (  # noqa: E402
+from vpb_common import (  # noqa: E402
     DEFAULT_BENCH_DIR,
     append_jsonl,
     await_with_timeout,
