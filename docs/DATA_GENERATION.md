@@ -12,9 +12,9 @@ one multi-turn conversation per source sample with a target step-level negative 
 ## Scripts
 
 ```text
-rollout_visualprm_global_think_stepwise_sft_data_pipeline.py  # stage 1: global-thinking + step-level rollout
-build_global_think_stepwise_multiturn_sft_dataset.py          # stage 2: multi-turn SFT dataset builder
-rollout_sft_data_pipeline.py                                  # shared library (paths, sampling, IO, prompts)
+data_pipeline/rollout_teacher.py   # stage 1: global-thinking + step-level teacher rollout
+data_pipeline/build_multiturn.py   # stage 2: multi-turn SFT dataset builder
+data_pipeline/common.py            # shared library (paths, sampling, IO, prompts)
 ```
 
 `rollout_visualprm_global_think_stepwise_sft_data_pipeline.py` matches a two-stage
@@ -63,7 +63,7 @@ pip install openai tqdm
 Run negative and positive subsets separately:
 
 ```bash
-python rollout_visualprm_global_think_stepwise_sft_data_pipeline.py \
+python data_pipeline/rollout_teacher.py \
   --polarity negative \
   --negative-score-threshold 0.125 \
   --positive-score-threshold 0.75 \
@@ -71,7 +71,7 @@ python rollout_visualprm_global_think_stepwise_sft_data_pipeline.py \
   --target-negative-step-ratio 0.4 \
   --num-workers 32
 
-python rollout_visualprm_global_think_stepwise_sft_data_pipeline.py \
+python data_pipeline/rollout_teacher.py \
   --polarity positive \
   --negative-score-threshold 0.125 \
   --positive-score-threshold 0.75 \
@@ -102,7 +102,7 @@ cleanup, or is shorter than `--global-thinking-min-chars` (default `100`).
 If your server requires an explicit thinking flag for the first call:
 
 ```bash
-python rollout_visualprm_global_think_stepwise_sft_data_pipeline.py \
+python data_pipeline/rollout_teacher.py \
   --polarity negative \
   --analysis-extra-body-json '{"chat_template_kwargs":{"thinking":true}}'
 ```
@@ -126,7 +126,7 @@ By default the scripts talk to a local OpenAI-compatible server
 ## Stage 2 — Build the Multi-Turn SFT Dataset
 
 ```bash
-python build_global_think_stepwise_multiturn_sft_dataset.py
+python data_pipeline/build_multiturn.py
 ```
 
 Default inputs/output (all under `rollout_outputs/`):
@@ -263,15 +263,12 @@ training. The original float scores are preserved in metadata.
 Syntax check:
 
 ```bash
-python -m py_compile \
-  rollout_visualprm_global_think_stepwise_sft_data_pipeline.py \
-  build_global_think_stepwise_multiturn_sft_dataset.py \
-  rollout_sft_data_pipeline.py
+python -m py_compile data_pipeline/rollout_teacher.py data_pipeline/build_multiturn.py data_pipeline/common.py
 ```
 
 Argument check:
 
 ```bash
-python rollout_visualprm_global_think_stepwise_sft_data_pipeline.py --help
-python build_global_think_stepwise_multiturn_sft_dataset.py --help
+python data_pipeline/rollout_teacher.py --help
+python data_pipeline/build_multiturn.py --help
 ```
