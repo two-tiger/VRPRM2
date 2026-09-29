@@ -13,7 +13,7 @@ Step-level macro F1 evaluation on VisualProcessBench (VPB): 2,866 samples,
 
 | File | Purpose |
 | --- | --- |
-| `metrics.py` | Step-level macro F1. Reports **both** Overall conventions: `overall_step_macro_f1` (step-pooled, official) and `mean_source_macro_f1` (unweighted subset mean). See docs/PROTOCOL.md. |
+| `metrics.py` | Step-level macro F1. `overall_step_macro_f1` (step-pooled, official) is the paper's single Overall column; `mean_source_macro_f1` (unweighted subset mean) is a diagnostic. See docs/PROTOCOL.md. |
 | `run_eval_vpb.sh` | **Single entry point** for API-served models. `VPB_MODE=global_think` (official two-stage protocol) \| `no_think` (`VPB_NO_THINK_MODE=single_pass\|stepwise`) \| `base_warmup` (process-untrained base model). |
 | `eval_vpb_global_think.py` | Two-stage evaluator: one global `<think>` block, then one guided 0/1 single-token request per step with judgment history. |
 | `eval_vpb_no_think.py` | No-thinking evaluator (single-pass JSON or stepwise). |
@@ -31,7 +31,9 @@ Step-level macro F1 evaluation on VisualProcessBench (VPB): 2,866 samples,
 2. Model selection / checkpoint selection must never use VPB-derived subsets;
    RL checkpoints are selected by peak RL validation reward only.
 3. After each run, `run_eval_vpb.sh` writes `<output>.metrics.json` containing
-   both Overall conventions. Report both in papers and state which is which.
+   both Overall conventions. The paper reports the official pooled Overall
+   (`overall_step_macro_f1`) as its single Overall column, aligned with the
+   VisualPRM paper; `mean_source_macro_f1` is a diagnostic only.
 
 ## Quick start
 

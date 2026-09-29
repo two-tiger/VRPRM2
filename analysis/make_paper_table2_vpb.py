@@ -9,12 +9,13 @@ The output CSV/markdown contains, per source and overall:
 - Overall (pooled)  = overall_step_macro_f1  [official protocol, step-weighted]
 - Overall (mean)    = mean_source_macro_f1   [unweighted subset mean]
 
-Both Overall columns must be reported in the paper (docs/PROTOCOL.md): they
-differ because the sources are uneven in size (MathVerse 1026 / MathVision
-712 / DynaMath 570 / WeMath 291 / MMMU 267 of 2,866). Baseline rows quoted
-from other papers should be added with their per-source numbers; their
-"Overall (mean)" can be recomputed from the per-source values, and their
-"Overall (pooled)" must be quoted from the original paper.
+The paper reports ONE Overall column: the official pooled macro F1,
+aligned with the VisualPRM paper convention (docs/PROTOCOL.md). The
+unweighted subset mean is printed to the console as an internal diagnostic
+only and does not appear in the table. Sources are uneven in size
+(MathVerse 1026 / MathVision 712 / DynaMath 570 / WeMath 291 / MMMU 267 of
+2,866), so the two conventions can diverge; baseline rows quoted from other
+papers must use the pooled Overall from the original paper.
 
 Example:
     python analysis/make_paper_table2_vpb.py \
@@ -55,15 +56,15 @@ def load_row(path: str) -> dict:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     by_source = data.get("by_source", {})
     row = {SOURCE_DISPLAY[s]: round(by_source[s]["macro_f1"] * 100, 2) for s in SOURCE_ORDER if s in by_source}
-    row["Overall (pooled)"] = round(data["overall_step_macro_f1"]["macro_f1"] * 100, 2)
-    row["Overall (mean)"] = round(data["mean_source_macro_f1"] * 100, 2)
+    row["Overall"] = round(data["overall_step_macro_f1"]["macro_f1"] * 100, 2)
+    row["_diagnostic_mean"] = round(data["mean_source_macro_f1"] * 100, 2)
     row["_samples"] = {SOURCE_DISPLAY[s]: by_source[s].get("num_samples") for s in SOURCE_ORDER if s in by_source}
     return row
 
 
 def main():
     args = parse_args()
-    columns = [SOURCE_DISPLAY[s] for s in SOURCE_ORDER] + ["Overall (pooled)", "Overall (mean)"]
+    columns = [SOURCE_DISPLAY[s] for s in SOURCE_ORDER] + ["Overall"]
 
     rows = {}
     for label, path in args.row:
@@ -76,6 +77,8 @@ def main():
 
     md = "\n".join(lines) + "\n\nPer-source sample counts: " + json.dumps(
         next(iter(rows.values()))["_samples"], ensure_ascii=False) + "\n"
+    md += "Diagnostic (not for the paper): unweighted subset means - " + ", ".join(
+        f"{label}={row['_diagnostic_mean']}" for label, row in rows.items()) + "\n"
 
     if args.output_md:
         Path(args.output_md).write_text(md, encoding="utf-8")

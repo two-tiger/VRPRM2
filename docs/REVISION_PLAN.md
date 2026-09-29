@@ -28,11 +28,13 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 
 ## Phase 1 — Metric & table restructure (P0, analysis-only, no retraining)
 
-- ☐ R1 Dual-Overall reporting in Table 2: pooled (official) **and** subset
-  mean columns; per-source sample counts in the caption; baselines marked
-  quoted-vs-re-evaluated. Tool: `analysis/make_paper_table2_vpb.py`
-  (emits both). Verify Athena-PRM "#Samples 155K" provenance (its arXiv says
-  ~5K process labels + 600K ORM init; footnote the ORM accounting).
+- ☐ R1 Single Overall column (pooled, official — DECIDED, aligned with the
+  VisualPRM reference paper; no dual reporting). Supplementary already
+  defines the convention and per-source counts; baselines marked
+  quoted-vs-re-evaluated. Tool: `analysis/make_paper_table2_vpb.py` (single
+  Overall; subset mean printed as console diagnostic only). Verify Athena-PRM
+  "#Samples 155K" provenance (its arXiv says ~5K process labels + 600K ORM
+  init; footnote the ORM accounting).
 - ☐ R2 Add a "Base Model" column to Table 2 (Qwen3-VL-8B-Thinking /
   InternVL2.5-8B / Qwen2.5-VL-7B / …) to make cross-base comparisons explicit.
 - ☐ R3 Narrative shift: flagship claim moves from "45.5K beats 400K"

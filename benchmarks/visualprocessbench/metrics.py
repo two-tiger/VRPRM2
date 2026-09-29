@@ -8,10 +8,11 @@ Two Overall conventions are reported together (see docs/PROTOCOL.md):
   the micro average of the score from different data sources", Wang et al.)
   and the number quoted as "Overall" in the paper's main tables.
 - ``mean_source_macro_f1``: unweighted mean of the five per-source macro
-  F1 values. Report it alongside the pooled number — the two can differ by
-  more than a point because the sources are uneven in size
-  (MathVerse 1026 / MathVision 712 / DynaMath 570 / WeMath 291 /
-  MMMU 267 samples out of 2,866).
+  F1 values. The paper reports ONLY the pooled number as Overall (aligned
+  with the reference-paper convention); the subset mean is kept here as an
+  internal diagnostic. The two can differ by more than a point because the
+  sources are uneven in size (MathVerse 1026 / MathVision 712 / DynaMath
+  570 / WeMath 291 / MMMU 267 samples out of 2,866).
 
 Neutral ground-truth steps (label 0) are excluded from both. Predictions
 that cannot be parsed to 0/1 are kept as an invalid class and count against

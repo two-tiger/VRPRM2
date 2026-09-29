@@ -77,9 +77,15 @@ Effective configuration of `easyr1/examples/vrprm/train_vrprm_rl.sh`
   (official threshold)**. Small deviations from the originally published
   numbers (62.18 vs 62.0 overall) come from this re-evaluation.
 
-## 5. Metrics — two Overall conventions, always report both
+## 5. Metrics — single Overall column (official pooled protocol)
 
-`metrics.py` computes both; per-source sample counts (2,866 total):
+The paper reports ONE Overall column: `overall_step_macro_f1`, the official
+step-pooled macro F1, aligned with the VisualPRM reference paper ("the
+overall score is the micro average of the score from different data
+sources"). `metrics.py` also emits `mean_source_macro_f1` (unweighted subset
+mean) as an internal diagnostic only — it must not appear as a second paper
+column; the per-subset mean is derivable from the per-subset columns anyway.
+Per-source sample counts (2,866 total):
 
 | Source | Samples | Steps (pos/neg) |
 | --- | --- | --- |
@@ -96,9 +102,11 @@ Effective configuration of `easyr1/examples/vrprm/train_vrprm_rl.sh`
 - `mean_source_macro_f1` — unweighted mean of the five per-source macro F1s.
   Recomputable for any baseline from published per-source numbers.
 
-The two differ by up to ±2.6 points depending on where a model wins. In the
-paper: report both columns, state the definition of each, and disclose the
-per-source sample counts. `analysis/make_paper_table2_vpb.py` emits both.
+The two differ by up to ±2.6 points depending on where a model wins, which
+is why the pooled definition is stated explicitly in the paper and the
+per-source counts are disclosed in the Supplementary Material.
+`analysis/make_paper_table2_vpb.py` emits the single Overall column and
+prints the subset mean as a console diagnostic.
 
 ## 6. Best-of-N evaluation
 
