@@ -15,7 +15,8 @@ Current workflow:
 
 1. Generate or resume missing Bo128 policy rollout caches.
 2. Evaluate Bo1 policy ability directly from cached rollouts.
-3. Start a PRM OpenAI-compatible endpoint.
+3. Start a PRM OpenAI-compatible endpoint (`run_bon_vrprm.sh` fans out over
+   `PRM_BASE_URL` endpoints).
 4. Score cached `rollouts_n128.jsonl` files with the PRM.
 5. Select BoN predictions from cached PRM scores.
 6. Run VLMEvalKit evaluation and summarize results.
@@ -41,8 +42,13 @@ InternVL2.5-26B: MMMU, MathVista, MathVision, MathVerse-VO, WeMath, LogicVista
 InternVL2.5-38B: MMMU, MathVista, MathVision, MathVerse-VO(partial)
 ```
 
-For `InternVL2.5-38B`, `MathVerse-VO` currently has only 661 complete
-sample-level rows out of the expected 788. The candidate cache already contains
+> **Action required (paper Table 4 integrity):** the committed cache state for
+> `InternVL2.5-38B` was incomplete when last checked (`MathVerse-VO` 661/788,
+> `WeMath`/`LogicVista` missing). The paper reports 38B on all six benchmarks.
+> Before the numbers are frozen, regenerate/complete the 38B caches and
+> re-derive Table 4 with `analysis/make_paper_table4_bon.py` so every reported
+> cell traces to a complete cache. (Historical note: 661/788 was the last
+> observed state.) The candidate cache already contains
 partial progress for 787 indices, so rerunning generation will only request
 missing candidates. `WeMath` and `LogicVista` are not present for 38B yet.
 

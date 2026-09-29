@@ -3,11 +3,14 @@ import json
 from pathlib import Path
 from typing import Any, Optional
 
+import sys
+from pathlib import Path as _P
+sys.path.insert(0, str(_P(__file__).resolve().parents[1] / "benchmarks" / "vlmeval_bon"))
 from common import TABLE2_DATASETS, parse_dataset_list
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Summarize BoN evaluation outputs into a Table-2-style CSV.")
+    parser = argparse.ArgumentParser(description="Summarize BoN evaluation outputs into the paper Table 4 CSV (Bo8 Overall across six benchmarks).")
     parser.add_argument("--root", required=True, help="Pipeline output root.")
     parser.add_argument("--models", required=True, help="Comma-separated model labels.")
     parser.add_argument("--datasets", default=",".join(TABLE2_DATASETS))
