@@ -33,11 +33,11 @@ EASYR1_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 VRPRM_ROOT="$(cd "${EASYR1_ROOT}/.." && pwd)"
 
 # ---------------------------------------------------------------- paths ----
-BASE_MODEL_PATH="${BASE_MODEL_PATH:-Qwen/Qwen3-VL-8B-Thinking}"
-DEFAULT_SFT_MODEL="${VRPRM_ROOT}/sft/output/qwen3_vl_8b_thinking_global_stepwise_multiturn_sft/v0-20260628-015250/checkpoint-513-merge"
+BASE_MODEL_PATH="${BASE_MODEL_PATH:-/mnt/shared-storage-user/chenxinquan/Qwen3-VL-8B-Thinking}"
+DEFAULT_SFT_MODEL="/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenSource/backup/VRPRM_v2.0_artifacts/sft_output/qwen3_vl_8b_thinking_global_stepwise_multiturn_sft/v0-20260628-015250/checkpoint-513-merge"
 MODEL_PATH="${MODEL_PATH:-${DEFAULT_SFT_MODEL}}"
 
-DATA_ROOT="${DATA_ROOT:-${VRPRM_ROOT}/data/VisualPRM400K-v1.1-Raw}"
+DATA_ROOT="${DATA_ROOT:-/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenSource/backup/release_v1/huggingface_datasets/VisualPRM400K-v1.1-Raw}"
 IMAGE_DIR="${IMAGE_DIR:-${VRPRM_ROOT}/data}"
 SOURCE_DATASET_DIR="${SOURCE_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_filtered_source_cases_clean_pos0875_pool150k_balanced}"
 DATASET_DIR="${DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k}"
