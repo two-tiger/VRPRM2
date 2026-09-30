@@ -87,7 +87,10 @@ def load_rows(path: str) -> list[dict[str, Any]]:
 
 
 def render_prompt(template_text: str, content: str) -> str:
-    return TEMPLATE_PLACEHOLDER.sub(content.strip(), template_text)
+    # Use a callable replacement so the content is inserted literally.
+    # A string replacement is parsed as a regex template, which crashes with
+    # `re.error: bad escape` when the prompt contains LaTeX such as \sqrt.
+    return TEMPLATE_PLACEHOLDER.sub(lambda _match: content.strip(), template_text)
 
 
 def encode_image(path: Path) -> dict[str, str]:
