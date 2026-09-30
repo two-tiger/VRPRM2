@@ -27,6 +27,9 @@ sft/
   merge_lora.sh                         merge LoRA -> HF for vLLM
 easyr1/examples/vrprm/
   train_vrprm_rl.sh                     paper RL run (flattened; defaults ARE the paper config)
+  train_vrprm_rl_v2.sh                  RL v2 (exploratory): unlocked optimization + FirstError
+                                        localization reward + entropy-ordered data; SFT frozen
+  run_entropy_select.sh                 J1-style entropy data selection against the SFT checkpoint
   train_vrprm_rl_from_base.sh           M3 ablation: RL without CoT cold start
   reward_source_macro.py                0.97*step + 0.02*format + 0.01*think reward
   vrprm_source_macro.jinja              rollout prompt template

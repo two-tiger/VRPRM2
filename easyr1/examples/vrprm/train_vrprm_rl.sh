@@ -124,10 +124,25 @@ mkdir -p "${HF_DATASETS_CACHE}" "${TRANSFORMERS_CACHE}" "${TMPDIR}" "${FLASHINFE
 export WANDB_MODE="${WANDB_MODE:-offline}"
 export WANDB_DIR="${WANDB_DIR:-${VRPRM_ROOT}/wandb}"
 
-DEFAULT_GUIDED_REGEX='<think>[\\s\\S]*</think>\\s*<answer>(\\s*Step\\s*[0-9]+\\s*:\\s*[01]\\s*)+</answer>'
+# Guided-decoding constraint on rollouts. Override GUIDED_REGEX for variants
+# that extend the answer grammar (e.g. FirstError in the v2 reward); keep the
+# JSON-escaped double backslashes when writing a custom regex.
+if [[ -z "${GUIDED_REGEX:-}" ]]; then
+  DEFAULT_GUIDED_REGEX='<think>[\\s\\S]*</think>\\s*<answer>(\\s*Step\\s*[0-9]+\\s*:\\s*[01]\\s*)+</answer>'
+else
+  DEFAULT_GUIDED_REGEX="${GUIDED_REGEX}"
+fi
 ROLLOUT_EXTRA_SAMPLING_PARAMS="${ROLLOUT_EXTRA_SAMPLING_PARAMS:-{\"guided_regex\":\"${DEFAULT_GUIDED_REGEX}\"}}"
 
 EXPERIMENT_NAME="${EXPERIMENT_NAME:-vrprm_rl_clean_balanced_40k_600}"
+
+# Reward plumbing: REWARD_FUNCTION / FORMAT_PROMPT / REWARD_KWARGS_JSON allow
+# drop-in reward variants (see reward_source_macro_localize.py) without editing
+# this file. Defaults below reproduce the paper run exactly.
+REWARD_FUNCTION="${REWARD_FUNCTION:-./examples/vrprm/reward_source_macro.py:compute_score}"
+FORMAT_PROMPT="${FORMAT_PROMPT:-./examples/vrprm/vrprm_source_macro.jinja}"
+REWARD_KWARGS_DEFAULT="{\"step_weight\":${STEP_WEIGHT:-0.97},\"format_weight\":${FORMAT_WEIGHT:-0.02},\"think_weight\":${THINK_WEIGHT:-0.01},\"count_weight\":${COUNT_WEIGHT:-0.15},\"min_think_chars\":${MIN_THINK_CHARS:-80},\"max_think_chars\":${MAX_THINK_CHARS:-1200}}"
+REWARD_KWARGS="${REWARD_KWARGS_JSON:-${REWARD_KWARGS_DEFAULT}}"
 
 python3 -m verl.trainer.main \
   config=examples/config.yaml \
@@ -138,7 +153,7 @@ python3 -m verl.trainer.main \
   data.image_key=images \
   data.shuffle="${DATA_SHUFFLE:-true}" \
   data.image_dir="${IMAGE_DIR}" \
-  data.format_prompt=./examples/vrprm/vrprm_source_macro.jinja \
+  data.format_prompt="${FORMAT_PROMPT}" \
   data.max_prompt_length="${MAX_PROMPT_LENGTH:-8192}" \
   data.max_response_length="${MAX_RESPONSE_LENGTH:-2048}" \
   data.rollout_batch_size="${ROLLOUT_BATCH_SIZE:-32}" \
@@ -178,8 +193,8 @@ python3 -m verl.trainer.main \
   worker.rollout.limit_images="${ROLLOUT_LIMIT_IMAGES:-0}" \
   worker.rollout.enable_chunked_prefill="${ENABLE_CHUNKED_PREFILL:-true}" \
   worker.rollout.extra_sampling_params="${ROLLOUT_EXTRA_SAMPLING_PARAMS}" \
-  worker.reward.reward_function=./examples/vrprm/reward_source_macro.py:compute_score \
-  worker.reward.reward_function_kwargs="{\"step_weight\":${STEP_WEIGHT:-0.97},\"format_weight\":${FORMAT_WEIGHT:-0.02},\"think_weight\":${THINK_WEIGHT:-0.01},\"count_weight\":${COUNT_WEIGHT:-0.15},\"min_think_chars\":${MIN_THINK_CHARS:-80},\"max_think_chars\":${MAX_THINK_CHARS:-1200}}" \
+  worker.reward.reward_function="${REWARD_FUNCTION}" \
+  worker.reward.reward_function_kwargs="${REWARD_KWARGS}" \
   algorithm.adv_estimator=grpo \
   algorithm.disable_kl="${DISABLE_KL:-false}" \
   algorithm.use_kl_loss="${USE_KL_LOSS:-true}" \

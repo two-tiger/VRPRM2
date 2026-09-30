@@ -62,6 +62,26 @@ Effective configuration of `easyr1/examples/vrprm/train_vrprm_rl.sh`
   subsets must never inform selection — the mini-VPB dev set (sampled from
   the VPB test split) has been removed from the repository for this reason.
 
+### 3.1 RL v2 (exploratory; SFT checkpoint FROZEN)
+
+`easyr1/examples/vrprm/train_vrprm_rl_v2.sh` — RL-only follow-up targeting
+"reason before judging". Changes vs. the paper run (§3), none touching SFT:
+
+| Aspect | Paper run (§3) | v2 |
+| --- | --- | --- |
+| lr / KL coef / steps | 5e-9 / 0.2 / 600 | **1e-7 / 1e-2 / 1200** |
+| rollout temp / top-p | 0.8 / 0.95 | **1.0 / 1.0** |
+| online filtering | off | **on [0.05, 0.95]** (skip degenerate groups) |
+| answer grammar | "Step i: 0/1" | + required **"FirstError: j"** line |
+| reward | 0.97 step + 0.02 fmt + 0.01 think | **0.75 step + 0.20 min(macro-F1, localization) + 0.04 fmt + 0.01 think** (`reward_source_macro_localize.py`) |
+| think band | 80–1200 chars | **80–2400 chars** (hard cap = max_response_length 2048) |
+| data order | shuffled | **entropy-ordered, shuffle off** (`select_rl_data_by_entropy.py`: K=4 samples per item on the SFT checkpoint, mean binary entropy of per-step judgments, uncertain-first) |
+
+Design notes: the FirstError grammar is enforced by guided decoding, so the
+format is learnable by RL without an SFT patch; R_cons = min(macro-F1,
+localization) blocks "guess-the-error-index" shortcuts; think length is
+bounded three ways (SFT prior + widened band + 2048-token rollout budget).
+
 ## 4. VisualProcessBench evaluation
 
 - Official protocol: **no reference answer in the model prompt**
