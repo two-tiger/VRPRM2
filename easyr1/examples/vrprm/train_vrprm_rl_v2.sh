@@ -152,8 +152,12 @@ FORMAT_PROMPT="${FORMAT_PROMPT:-./examples/vrprm/vrprm_source_macro_localize.jin
 REWARD_KWARGS_DEFAULT="{\"step_weight\":${STEP_WEIGHT:-0.75},\"cons_weight\":${CONS_WEIGHT:-0.20},\"format_weight\":${FORMAT_WEIGHT:-0.04},\"think_weight\":${THINK_WEIGHT:-0.01},\"count_weight\":${COUNT_WEIGHT:-0.15},\"min_think_chars\":${MIN_THINK_CHARS:-80},\"max_think_chars\":${MAX_THINK_CHARS:-2400}}"
 REWARD_KWARGS="${REWARD_KWARGS_JSON:-${REWARD_KWARGS_DEFAULT}}"
 
-# Guided grammar REQUIRES the FirstError line (JSON-escaped backslashes).
-GUIDED_REGEX="${GUIDED_REGEX:-<think>[\\s\\S]*</think>\\s*<answer>(\\s*Step\\s*[0-9]+\\s*:\\s*[01]\\s*)+(\\s*FirstError\\s*:\\s*-?[0-9]+\\s*)</answer>}"
+# Guided grammar REQUIRES the FirstError line. The default MUST stay in
+# single quotes: in double quotes bash collapses \\s to \s, which makes the
+# embedded JSON invalid ("Invalid \\escape") and crashes verl at startup.
+if [[ -z "${GUIDED_REGEX:-}" ]]; then
+  GUIDED_REGEX='<think>[\\s\\S]*</think>\\s*<answer>(\\s*Step\\s*[0-9]+\\s*:\\s*[01]\\s*)+(\\s*FirstError\\s*:\\s*-?[0-9]+\\s*)</answer>'
+fi
 ROLLOUT_EXTRA_SAMPLING_PARAMS="${ROLLOUT_EXTRA_SAMPLING_PARAMS:-{\"guided_regex\":\"${GUIDED_REGEX}\"}}"
 
 EXPERIMENT_NAME="${EXPERIMENT_NAME:-vrprm_rl_v2_localize_entropy_40k_1200}"
