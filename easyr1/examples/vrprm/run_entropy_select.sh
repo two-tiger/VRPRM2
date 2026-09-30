@@ -19,6 +19,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EASYR1_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 VRPRM_ROOT="$(cd "${EASYR1_ROOT}/.." && pwd)"
+BACKUP_DATA_ROOT="/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenSource/backup/VRPRM_v2.0_artifacts/data"
+# RL rows reference images as VisualPRM400K-v1.1-Raw/images/..., so the image
+# dir must be the directory CONTAINING VisualPRM400K-v1.1-Raw after the
+# reorganization (missing images are silently skipped by the scorer, which
+# would make entropy scores text-only).
+SELECT_IMAGE_DIR="${SELECT_IMAGE_DIR:-/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenSource/backup/release_v1/huggingface_datasets}"
 
 SELECT_BASE_URL="${SELECT_BASE_URL:-http://127.0.0.1:8000/v1}"
 SELECT_API_KEY="${SELECT_API_KEY:-EMPTY}"
@@ -27,7 +33,7 @@ SELECT_NUM_SAMPLES="${SELECT_NUM_SAMPLES:-4}"
 SELECT_TEMPERATURE="${SELECT_TEMPERATURE:-0.7}"
 SELECT_CONCURRENCY="${SELECT_CONCURRENCY:-32}"  # ~128 per 8 replicas (in-flight = concurrency x num_samples / replicas)
 
-SOURCE_DATASET_DIR="${SOURCE_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k}"
+SOURCE_DATASET_DIR="${SOURCE_DATASET_DIR:-${BACKUP_DATA_ROOT}/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k}"
 ENTROPY_DATASET_DIR="${ENTROPY_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k_entropy}"
 
 if [[ ! -f "${SOURCE_DATASET_DIR}/train.jsonl" ]]; then
@@ -40,7 +46,7 @@ fi
 python3 "${EASYR1_ROOT}/scripts/select_rl_data_by_entropy.py" \
   --input "${SOURCE_DATASET_DIR}/train.jsonl" \
   --output-dir "${ENTROPY_DATASET_DIR}" \
-  --image-dir "${VRPRM_ROOT}/data" \
+  --image-dir "${SELECT_IMAGE_DIR}" \
   --base-url "${SELECT_BASE_URL}" \
   --api-key "${SELECT_API_KEY}" \
   --model "${SELECT_MODEL}" \
