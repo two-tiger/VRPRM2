@@ -82,6 +82,16 @@ format is learnable by RL without an SFT patch; R_cons = min(macro-F1,
 localization) blocks "guess-the-error-index" shortcuts; think length is
 bounded three ways (SFT prior + widened band + 2048-token rollout budget).
 
+8xH200 throughput preset (algorithmic semantics unchanged):
+`N_GPUS_PER_NODE=8`, `TENSOR_PARALLEL_SIZE=1` (8 DP rollout engines),
+`ROLLOUT_BATCH_SIZE=64` / `MINI_ROLLOUT_BATCH_SIZE=32` (better vLLM batching;
+`GLOBAL_BATCH_SIZE` stays 16), `MICRO_BATCH_SIZE_UPDATE=8` /
+`MICRO_BATCH_SIZE_EXPERIENCE=8`, `VLLM_MAX_NUM_BATCHED_TOKENS=131072`,
+`GPU_MEMORY_UTILIZATION=0.80`, `VAL_BATCH_SIZE=128`. For entropy selection,
+serve 8 single-GPU replicas (`serve_vllm_dp.sh`, MAX_NUM_SEQS=128,
+ENFORCE_EAGER=0) and set SELECT_CONCURRENCY=128 with 8 comma-separated
+endpoints.
+
 ## 4. VisualProcessBench evaluation
 
 - Official protocol: **no reference answer in the model prompt**

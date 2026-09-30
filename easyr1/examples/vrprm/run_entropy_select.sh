@@ -2,10 +2,15 @@
 # J1-style entropy data selection: score the 40K RL pool with the frozen SFT
 # checkpoint and reorder it uncertainty-first for train_vrprm_rl_v2.sh.
 #
-# 1) Serve the merged SFT checkpoint (LoRA already merged via sft/merge_lora.sh):
-#      bash benchmarks/visualprocessbench/serve_vllm.sh /path/to/checkpoint-513-merge
-#    For multi-replica serving use serve_vllm_dp.sh and pass comma-separated
-#    URLs in SELECT_BASE_URL below.
+# 1) Serve the merged SFT checkpoint (LoRA already merged via sft/merge_lora.sh).
+#    8xH200 preset (one replica per GPU, ~1-1.5h for the whole pool):
+#      CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 NUM_REPLICAS=8 PORT_BASE=8000 \
+#        MAX_NUM_SEQS=128 GPU_MEMORY_UTILIZATION=0.92 ENABLE_PREFIX_CACHING=1 \
+#        ENFORCE_EAGER=0 \
+#        bash benchmarks/visualprocessbench/serve_vllm_dp.sh start /path/to/checkpoint-513-merge
+#      SELECT_BASE_URL="http://127.0.0.1:8000/v1,http://127.0.0.1:8001/v1,http://127.0.0.1:8002/v1,http://127.0.0.1:8003/v1,http://127.0.0.1:8004/v1,http://127.0.0.1:8005/v1,http://127.0.0.1:8006/v1,http://127.0.0.1:8007/v1" \
+#        SELECT_CONCURRENCY=128 bash easyr1/examples/vrprm/run_entropy_select.sh
+#    Single-GPU fallback: bash benchmarks/visualprocessbench/serve_vllm.sh <model>
 # 2) Run this script (a few hours on a single 8B vLLM instance for 40K x 4).
 # 3) Start RL v2; it picks up the entropy-ordered split automatically:
 #      bash easyr1/examples/vrprm/train_vrprm_rl_v2.sh
@@ -20,7 +25,7 @@ SELECT_API_KEY="${SELECT_API_KEY:-EMPTY}"
 SELECT_MODEL="${SELECT_MODEL:-auto}"
 SELECT_NUM_SAMPLES="${SELECT_NUM_SAMPLES:-4}"
 SELECT_TEMPERATURE="${SELECT_TEMPERATURE:-0.7}"
-SELECT_CONCURRENCY="${SELECT_CONCURRENCY:-32}"
+SELECT_CONCURRENCY="${SELECT_CONCURRENCY:-32}"  # ~128 per 8 replicas (in-flight = concurrency x num_samples / replicas)
 
 SOURCE_DATASET_DIR="${SOURCE_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k}"
 ENTROPY_DATASET_DIR="${ENTROPY_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k_entropy}"

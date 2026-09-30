@@ -23,6 +23,18 @@
 #                  DATA_SHUFFLE=false preserves the order.
 #
 # Every knob remains overridable; this overlay only changes defaults.
+#
+# 8xH200 preset — run as:
+#   N_GPUS_PER_NODE=8 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
+#     ROLLOUT_BATCH_SIZE=64 MINI_ROLLOUT_BATCH_SIZE=32 \
+#     MICRO_BATCH_SIZE_UPDATE=8 MICRO_BATCH_SIZE_EXPERIENCE=8 \
+#     VLLM_MAX_NUM_BATCHED_TOKENS=131072 GPU_MEMORY_UTILIZATION=0.80 \
+#     VAL_BATCH_SIZE=128 bash easyr1/examples/vrprm/train_vrprm_rl_v2.sh
+# Rationale: TP=1 per GPU gives 8 data-parallel vLLM rollout engines (the 8B
+# model fits one H200 easily); FSDP shards the LoRA update across 8 GPUs;
+# rollout_batch 32->64 improves generation batching while global_batch_size
+# stays 16 prompts x 16 rollouts per optimizer step (update semantics
+# unchanged); micro batch 2->8 exploits the 141GB headroom.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
