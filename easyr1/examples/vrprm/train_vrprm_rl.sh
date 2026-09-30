@@ -38,7 +38,8 @@ DEFAULT_SFT_MODEL="/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenS
 MODEL_PATH="${MODEL_PATH:-${DEFAULT_SFT_MODEL}}"
 
 DATA_ROOT="${DATA_ROOT:-/mnt/shared-storage-user/evobox-share/chenxinquan/VRPRM_OpenSource/backup/release_v1/huggingface_datasets/VisualPRM400K-v1.1-Raw}"
-IMAGE_DIR="${IMAGE_DIR:-${VRPRM_ROOT}/data}"
+# RL rows store images relative to the directory CONTAINING VisualPRM400K-v1.1-Raw.
+IMAGE_DIR="${IMAGE_DIR:-$(cd "${DATA_ROOT}/.." && pwd)}"
 SOURCE_DATASET_DIR="${SOURCE_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_filtered_source_cases_clean_pos0875_pool150k_balanced}"
 DATASET_DIR="${DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_source_macro_rl_clean_pos0875_balanced_40k}"
 
