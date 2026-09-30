@@ -94,6 +94,14 @@ if [[ ! -f "${DATASET_DIR}/train.jsonl" || ! -f "${DATASET_DIR}/test.jsonl" || !
     --seed "${DATA_SEED:-42}"
 fi
 
+# PREPARE_ONLY=true: build/refresh the RL datasets and exit without training.
+# Fresh-machine bootstrap: PREPARE_ONLY=true bash train_vrprm_rl.sh
+#   -> run_entropy_select.sh -> train_vrprm_rl_v2.sh
+if [[ "${PREPARE_ONLY:-false}" == "true" ]]; then
+  echo "PREPARE_ONLY=true: datasets ready under ${EASYR1_ROOT}/data, skipping training launch."
+  exit 0
+fi
+
 # --------------------------------------------------------------- launch ----
 export PYTHONPATH="${EASYR1_ROOT}:${PYTHONPATH:-}"
 export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"

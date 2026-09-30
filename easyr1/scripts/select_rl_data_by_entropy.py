@@ -250,11 +250,18 @@ async def run(args: argparse.Namespace) -> None:
     (out_dir / ".entropy_selected").write_text(
         json.dumps({"seed": args.seed, "num_samples": args.num_samples}) + "\n", encoding="utf-8"
     )
+    # Launcher guard marker (same sentinel prepare_visualprm400k_source_macro_rl.py
+    # writes). Without it, train_vrprm_rl(.sh)'s auto-prep would regenerate the
+    # split in place and destroy the entropy ordering.
+    (out_dir / ".visualprm_source_macro_paths_v1").write_text("ok\n", encoding="utf-8")
 
-    # Copy the validation split unchanged so the launcher finds it.
+    # Copy the validation split and metadata unchanged so the launcher finds them.
     val_src = Path(args.input).parent / "test.jsonl"
     if val_src.exists():
         (out_dir / "test.jsonl").write_text(val_src.read_text(encoding="utf-8"), encoding="utf-8")
+    meta_src = Path(args.input).parent / "dataset_meta.json"
+    if meta_src.exists():
+        (out_dir / "dataset_meta.json").write_text(meta_src.read_text(encoding="utf-8"), encoding="utf-8")
 
     print(json.dumps(stats, ensure_ascii=False, indent=2))
 

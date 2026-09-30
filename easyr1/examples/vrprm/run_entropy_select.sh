@@ -32,8 +32,8 @@ ENTROPY_DATASET_DIR="${ENTROPY_DATASET_DIR:-${EASYR1_ROOT}/data/visualprm400k_so
 
 if [[ ! -f "${SOURCE_DATASET_DIR}/train.jsonl" ]]; then
   echo "Source RL split not found: ${SOURCE_DATASET_DIR}/train.jsonl" >&2
-  echo "It is auto-prepared by train_vrprm_rl.sh / train_vrprm_rl_v2.sh on first RL run," >&2
-  echo "or build it manually with the prepare step in those scripts." >&2
+  echo "Bootstrap it without launching training:" >&2
+  echo "  PREPARE_ONLY=true bash ${SCRIPT_DIR}/train_vrprm_rl.sh" >&2
   exit 1
 fi
 
